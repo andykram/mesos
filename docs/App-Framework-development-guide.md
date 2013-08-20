@@ -1,14 +1,17 @@
-h1. App/Framework development guide
+# App/Framework development guide
 
-<b>Note:</b> In this document (and also in the Mesos code base, at least as of Feb 14, 2012), we refer to Mesos Applications as "Frameworks".
+**Note:** In this document (and also in the Mesos code base, at least as of Feb 14, 2012), we refer to Mesos Applications as "Frameworks".
 
-See one of the example framework schedulers in @MESOS_HOME/src/examples/@ to get an idea of what a Mesos framework scheduler and executor in the language of your choice looks like.
+See one of the example framework schedulers in `MESOS_HOME/src/examples/` to get an idea of what a Mesos framework scheduler and executor in the language of your choice looks like.
 
-h2. Create your Framework Scheduler
+## Create your Framework Scheduler
 
-You can write a framework scheduler in C, C++, Java/Scala, or Python. Your framework scheduler should inherit from the @Scheduler@ class (see API below). Your scheduler should create a SchedulerDriver (which will mediate communication between your scheduler and the Mesos master) and then call @SchedulerDriver.run()@
+You can write a framework scheduler in C, C++, Java/Scala, or Python.
+Your framework scheduler should inherit from the `Scheduler` class (see API below).
+Your scheduler should create a `SchedulerDriver` (which will mediate
+communication between your scheduler and the Mesos master) and then call `SchedulerDriver.run()`
 
-h3. Scheduler API (as of 2013/02/01) declared in @MESOS_HOME/include/mesos/scheduler.hpp@
+### Scheduler API (as of 2013/02/01) declared in `MESOS_HOME/include/mesos/scheduler.hpp`
 
 ```c++
   /**
@@ -195,8 +198,23 @@ h3. Executor API (as of 2013/02/01) declared in @MESOS_HOME/include/mesos/execut
 ```
 
 
-h2. Install your Framework
+## Install your Framework
 
-You need to put your framework somewhere that all slaves on the cluster can get it from. If you are running HDFS, you can put your executor into HDFS. Then, you tell Mesos where it is via the @ExecutorInfo@ parameter of @MesosSchedulerDriver@'s constructor (e.g. see src/examples/java/TestFramework.java for an example of this). ExecutorInfo is a a Protocol Buffer Message class (defined in @include/mesos/mesos.proto@), and you set its uri field to something like "HDFS://path/to/executor/". Also, you can pass the @frameworks_home@ configuration option (defaults to: @MESOS_HOME/frameworks@) to your @mesos-slave@ daemons when you launch them to specify where all of your framework executors are stored (e.g. on an NFS mount that is available to all slaves), then set @ExecutorInfo@ to be a relative path, and the slave will prepend the value of frameworks_home to the relative path provided.
+You need to put your framework somewhere that all slaves on the cluster can get it from.
+If you are running HDFS, you can put your executor into HDFS. Then, you tell Mesos
+where it is via the `ExecutorInfo` parameter of `MesosSchedulerDriver`'s constructor
+(e.g. see src/examples/java/TestFramework.java for an example of this).
+`ExecutorInfo` is a a Protocol Buffer Message class (defined in `include/mesos/mesos.proto`),
+and you set its uri field to something like `HDFS://path/to/executor/`.
 
-Once you are sure that your executors are available to the mesos-slaves, you should be able to run your scheduler, which will register with the Mesos master, and start receiving resource offers!
+Also, you can pass the `frameworks_home` configuration option
+(which defaults to: `MESOS_HOME/frameworks`) to your `mesos-slave`
+daemons when you launch them to specify where all of your framework
+executors are stored (e.g. on an NFS mount that is available to all slaves).
+Then you can set `ExecutorInfo` to be a relative path, and the slave will
+prepend the value of `frameworks_home` to the relative path provided.
+
+Once you are sure that your executors are available to the mesos-slaves, you
+should be able to run your scheduler, which will register with the Mesos master,
+and start receiving resource offers!
+
